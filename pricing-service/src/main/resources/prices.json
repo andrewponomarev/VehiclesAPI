@@ -1,0 +1,14 @@
+[
+  {
+    "_class":"com.aaponomarev.pricing.domain.price.Price",
+    "vehicleId":1,
+    "currency":"USD",
+    "price": 1000.00
+  },
+  {
+    "_class":"com.aaponomarev.pricing.domain.price.Price",
+    "vehicleId":2,
+    "currency":"USD",
+    "price": 2000.00
+  }
+]
