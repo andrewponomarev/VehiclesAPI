@@ -32,7 +32,13 @@ public class CarService {
      * @return a list of all vehicles in the CarRepository
      */
     public List<Car> list() {
-        return repository.findAll();
+        List<Car> cars = repository.findAll();
+        cars.stream()
+                .forEach(car -> {
+                    car.setLocation(mapsClient.getAddress(car.getLocation()));
+                    car.setPrice(priceClient.getPrice(car.getId()));
+                });
+        return cars;
     }
 
     /**
@@ -41,7 +47,6 @@ public class CarService {
      * @return the requested car's information, including location and price
      */
     public Car findById(Long id) {
-
         Car car = repository.findById(id).orElseThrow(CarNotFoundException::new);
 
         String price = priceClient.getPrice(id);
@@ -60,15 +65,28 @@ public class CarService {
      */
     public Car save(Car car) {
         if (car.getId() != null) {
-            return repository.findById(car.getId())
-                    .map(carToBeUpdated -> {
-                        carToBeUpdated.setDetails(car.getDetails());
-                        carToBeUpdated.setLocation(car.getLocation());
-                        return repository.save(carToBeUpdated);
-                    }).orElseThrow(CarNotFoundException::new);
+            return update(car);
+        } else {
+            return create(car);
         }
+    }
 
-        return repository.save(car);
+    private Car update(Car car) {
+        return repository.findById(car.getId())
+                .map(carToBeUpdated -> {
+                    carToBeUpdated.setDetails(car.getDetails());
+                    Car updatedCar = repository.save(carToBeUpdated);
+                    updatedCar.setPrice(priceClient.getPrice(car.getId()));
+                    updatedCar.setLocation(mapsClient.getAddress(car.getLocation()));
+                    return updatedCar;
+                }).orElseThrow(CarNotFoundException::new);
+    }
+
+    private Car create(Car car) {
+        Car createdCar = repository.save(car);
+        createdCar.setPrice(priceClient.getPrice(car.getId()));
+        createdCar.setLocation(mapsClient.getAddress(car.getLocation()));
+        return createdCar;
     }
 
     /**
