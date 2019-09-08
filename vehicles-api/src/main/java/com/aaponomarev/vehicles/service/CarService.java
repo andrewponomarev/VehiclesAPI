@@ -75,18 +75,16 @@ public class CarService {
         return repository.findById(car.getId())
                 .map(carToBeUpdated -> {
                     carToBeUpdated.setDetails(car.getDetails());
-                    Car updatedCar = repository.save(carToBeUpdated);
-                    updatedCar.setPrice(priceClient.getPrice(car.getId()));
-                    updatedCar.setLocation(mapsClient.getAddress(car.getLocation()));
-                    return updatedCar;
+                    carToBeUpdated.setPrice(priceClient.getPrice(car.getId()));
+                    carToBeUpdated.setLocation(mapsClient.getAddress(car.getLocation()));
+                    return repository.save(carToBeUpdated);
                 }).orElseThrow(CarNotFoundException::new);
     }
 
     private Car create(Car car) {
-        Car createdCar = repository.save(car);
-        createdCar.setPrice(priceClient.getPrice(car.getId()));
-        createdCar.setLocation(mapsClient.getAddress(car.getLocation()));
-        return createdCar;
+        car.setPrice(priceClient.getPrice(car.getId()));
+        car.setLocation(mapsClient.getAddress(car.getLocation()));
+        return repository.save(car);
     }
 
     /**
