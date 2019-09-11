@@ -75,6 +75,7 @@ public class CarService {
         return repository.findById(car.getId())
                 .map(carToBeUpdated -> {
                     carToBeUpdated.setDetails(car.getDetails());
+                    carToBeUpdated.setCondition(car.getCondition());
                     carToBeUpdated.setPrice(priceClient.getPrice(car.getId()));
                     carToBeUpdated.setLocation(mapsClient.getAddress(car.getLocation()));
                     return repository.save(carToBeUpdated);
